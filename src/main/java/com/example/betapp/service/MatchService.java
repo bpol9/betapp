@@ -1,6 +1,6 @@
 package com.example.betapp.service;
 
-import com.example.betapp.dto.EditOddsDto;
+import com.example.betapp.dto.OddsDto;
 import com.example.betapp.dto.EditStartTimeDto;
 import com.example.betapp.dto.MatchOddsDto;
 import com.example.betapp.dto.MatchDto;
@@ -60,16 +60,31 @@ public class MatchService {
         }
     }
 
+    public MatchDto addMatchOdds(OddsDto oddsDto) throws BadRequestException {
+        Match match = matchRepository.findById(oddsDto.getMatchId())
+                .orElseThrow(() -> new BadRequestException("Match id " + oddsDto.getMatchId() + " not found"));
+        if (getOddsBySpecifier(match, oddsDto.getSpecifier()).isPresent()) {
+            throw new BadRequestException("Specifier " + oddsDto.getSpecifier() + " exists");
+        }
+        MatchOdds matchOdds = new MatchOdds();
+        matchOdds.setMatch(match);
+        matchOdds.setSpecifier(oddsDto.getSpecifier());
+        matchOdds.setOdds(oddsDto.getOdds());
+        match.getOdds().add(matchOdds);
+        matchRepository.save(match);
+        return convertMatchToDto(match);
+    }
+
     public void deleteMatch(Long id) {
         matchRepository.deleteById(id);
     }
 
-    public MatchDto editOdds(EditOddsDto editOddsDto) throws BadRequestException{
-        Match match = matchRepository.findById(editOddsDto.getMatchId())
-                .orElseThrow(() -> new BadRequestException("Match id " + editOddsDto.getMatchId() + " not found"));
-        MatchOdds odds = getOddsBySpecifier(match, editOddsDto.getSpecifier())
-                .orElseThrow(() -> new BadRequestException("specifier " + editOddsDto.getSpecifier() + " not found"));
-        odds.setOdds(editOddsDto.getOdds());
+    public MatchDto editOdds(OddsDto oddsDto) throws BadRequestException{
+        Match match = matchRepository.findById(oddsDto.getMatchId())
+                .orElseThrow(() -> new BadRequestException("Match id " + oddsDto.getMatchId() + " not found"));
+        MatchOdds odds = getOddsBySpecifier(match, oddsDto.getSpecifier())
+                .orElseThrow(() -> new BadRequestException("specifier " + oddsDto.getSpecifier() + " not found"));
+        odds.setOdds(oddsDto.getOdds());
         matchOddsRepository.save(odds);
         return convertMatchToDto(match);
     }

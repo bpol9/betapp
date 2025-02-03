@@ -2,7 +2,7 @@ package com.example.betapp.dto;
 
 import java.math.BigDecimal;
 
-public class EditOddsDto {
+public class OddsDto {
     private Long matchId;
     private String specifier;
     private BigDecimal odds;

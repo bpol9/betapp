@@ -1,6 +1,6 @@
 package com.example.betapp.controller;
 
-import com.example.betapp.dto.EditOddsDto;
+import com.example.betapp.dto.OddsDto;
 import com.example.betapp.dto.EditStartTimeDto;
 import com.example.betapp.dto.MatchDto;
 import com.example.betapp.exception.BadRequestException;
@@ -34,9 +34,14 @@ public class ApiController {
         return matchDto != null ? ResponseEntity.ok(matchDto) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
+    @PostMapping(value = "/match/add-odds", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MatchDto> addMatchOdds(@RequestBody OddsDto oddsDto) throws BadRequestException {
+        return ResponseEntity.ok(matchService.addMatchOdds(oddsDto));
+    }
+
     @PatchMapping(value = "/edit-odds", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MatchDto> editOdds(@RequestBody EditOddsDto editOddsDto) throws BadRequestException {
-        return ResponseEntity.ok(matchService.editOdds(editOddsDto));
+    public ResponseEntity<MatchDto> editOdds(@RequestBody OddsDto oddsDto) throws BadRequestException {
+        return ResponseEntity.ok(matchService.editOdds(oddsDto));
     }
 
     @PatchMapping(value = "/edit-start-time", consumes = MediaType.APPLICATION_JSON_VALUE)
